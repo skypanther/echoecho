@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+
+/*
+	echoserver - simple, sockets-based server that echos data it receives
+	author: Tim Poulsen
+	copyright: 2013, Tim Poulsen
+	license: MIT (though who would want to use this?)
+*/
+var moment = require('moment');
+var EchoServer = function(port, verbose) {
+	// echo server
+	if(!port) port = 54321;
+	require('net').createServer(function(socket) {
+		socket.on('data', function(data) {
+			// received data
+			if(verbose) {
+				console.log(moment().format('YYYY/MM/DD HH:MM:SS') + ' ['+socket.remoteAddress + '] ' + data.toString());
+			}
+			socket.write(data.toString())
+		});
+		socket.on('end', function(data) {
+			// connection closed
+		});
+		socket.on('error', function(er) {
+			console.log(er);
+		});
+	}).listen(port, function(){
+		console.log('echoserver listening on port ' + port);
+		console.log('type `q` and Enter to exit');
+	});
+};
+module.exports = EchoServer;
+
+if (!module.parent) {
+	// process command-line arguments || set defaults
+	var program = require('commander');
+	program
+	  .version('0.0.1')
+	  .usage('[-p port_number] [-v]\n  Type `q` [Enter] to exit')
+	  .option('-p, --port [portnumber]', 'Specify port on which to listen [54321]', parseInt)
+	  .option('-v, --verbose', 'Log data received to the console')
+	  .parse(process.argv);
+
+	var port = program.port || 54321;
+	var verbose = program.verbose || false;
+	// launch the actual server
+	EchoServer(port, verbose);
+	// listen for stdin input and if a `q` then quit
+	process.stdin.resume();
+	process.stdin.setEncoding('utf8');
+	process.stdin.on('data', function(chunk) {
+		if(chunk.toString() == 'q\n') process.exit(0);
+	});
+}

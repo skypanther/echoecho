@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+/*
+	EchoClient - client for echoserver, sends input from stdin to server and logs responses
+	author: Tim Poulsen
+	copyright: 2013, Tim Poulsen
+	license: MIT (though who would want to use this?)
+*/
+
+var EchoClient = function(port, host) {
+	var net = require('net'),
+		p = port || 54321,
+		h = host || 'localhost';
+
+	var client = net.connect({port: p, host: h}, function() { 
+		//'connect' listener
+		console.log(''); // blank line for good looks
+		console.log('Type something to hear the echo:');
+	});
+	client.on('data', function(data) {
+		console.log(data.toString());
+	});
+	client.on('end', function() {
+		console.log('client disconnected');
+		process.exit(1);
+	});
+	client.on('error', function(err) {
+		if(err.code == 'ECONNREFUSED') {
+			console.log('Make sure to start the server first, and use the same port number.');
+		} else {
+			console.log(err.code);
+		}
+		console.log('');
+		process.exit(1);
+	});
+	return client;
+};
+module.exports = EchoClient;
+
+if (!module.parent) {
+	// process command-line arguments
+	var program = require('commander');
+	program
+	  .version('0.0.1')
+	  .usage('[-p port_number] [-H ip_address]')
+	  .option('-p, --port [portnumber]', 'Specify port on which to send [54321]', parseInt)
+	  .option('-H, --host [ip_address]', 'Specify IP address of the server [54321]')
+	  .parse(process.argv);
+
+	var port = program.port || 54321;
+	var host = program.host || 'localhost';
+
+	// instantiate the echo client
+	var client = EchoClient(port, host);
+	// listen for stdin input and send to echoserver
+	process.stdin.resume();
+	process.stdin.setEncoding('utf8');
+	process.stdin.on('data', function(chunk) {
+	  client.write(chunk);
+	});
+}
+
