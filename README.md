@@ -14,7 +14,7 @@ Install with:
 
 Run as a standalone echo server:
 ```
-Usage: ~/node_modules/echoserver/echoserver [-p port_number] [-v]
+Usage: ~/node_modules/echoecho/echoserver [-p port_number] [-v]
   Type `q` [Enter] to exit
 
   Options:
@@ -36,7 +36,7 @@ echoecho = new Echoserver([port], [verbose]);
 
 Note, the echo server must be running _first_. Then, run as a standalone echo client:
 ```
-Usage: ~/node_modules/echoclient/echoclient.js [-p port_number] [-H ip_address]
+Usage: ~/node_modules/echoecho/echoclient.js [-p port_number] [-H ip_address]
 
   Options:
 
@@ -55,6 +55,16 @@ echoclient.on('data', function(data) {
     console.log(data.toString());
 });
 ```
+
+## Unit tests
+
+Included are simple tests for the server and client intended to be used with jasmine-node (other Jasmine packages might work). The following should test the server and client, respectively. Note, the server doesn't quit when the test is complete. Press Ctrl-C to close it.
+
+```
+jasmine-node ~/node_modules/echoecho/spec/echoserverSpec.js
+jasmine-node ~/node_modules/echoecho/spec/echoclientSpec.js
+```
+
 
 
 # Author
