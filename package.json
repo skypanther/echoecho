@@ -5,7 +5,7 @@
   "main": "echoserver.js",
   "bin": {
     "echoserver": "./echoserver",
-    "echoclient": "./echoclient",
+    "echoclient": "./echoclient"
   },
   "repository": {
     "type": "git",
